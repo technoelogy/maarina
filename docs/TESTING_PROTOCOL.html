@@ -1,0 +1,559 @@
+<h1 id="maarina-alert-testing-protocol">MAARINA Alert — Testing
+Protocol</h1>
+<p><strong>Total test cases: 56</strong><br />
+<strong>Coverage: All 8 phases</strong><br />
+<strong>Format:</strong> ID | Test | Input | Expected | Pass/Fail</p>
+<hr />
+<h2 id="phase-1-foundation-tests-6-tests">Phase 1 — Foundation Tests (6
+tests)</h2>
+<table>
+<colgroup>
+<col style="width: 9%" />
+<col style="width: 14%" />
+<col style="width: 35%" />
+<col style="width: 40%" />
+</colgroup>
+<thead>
+<tr>
+<th>ID</th>
+<th>Test</th>
+<th>Input / Action</th>
+<th>Expected Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T01</td>
+<td>ESP32-S3 boots</td>
+<td>Power on</td>
+<td>Serial output: “MAARINA boot OK” within 3s</td>
+</tr>
+<tr>
+<td>T02</td>
+<td>LED blink</td>
+<td>Boot</td>
+<td>GPIO14 (green LED) blinks 1Hz</td>
+</tr>
+<tr>
+<td>T03</td>
+<td>I2C scan</td>
+<td>Boot</td>
+<td>MPU6050 detected at address 0x68</td>
+</tr>
+<tr>
+<td>T04</td>
+<td>NVS read/write</td>
+<td>Write “test=1”, read back</td>
+<td>Value matches, no corruption</td>
+</tr>
+<tr>
+<td>T05</td>
+<td>USB serial monitor</td>
+<td>Connect USB</td>
+<td>115200 baud, readable output</td>
+</tr>
+<tr>
+<td>T06</td>
+<td>Flash firmware</td>
+<td>OTA or USB flash</td>
+<td>Device reboots, new version string confirmed</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="phase-2-fall-detection-tests-10-tests">Phase 2 — Fall Detection
+Tests (10 tests)</h2>
+<table>
+<colgroup>
+<col style="width: 9%" />
+<col style="width: 14%" />
+<col style="width: 35%" />
+<col style="width: 40%" />
+</colgroup>
+<thead>
+<tr>
+<th>ID</th>
+<th>Test</th>
+<th>Input / Action</th>
+<th>Expected Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T07</td>
+<td>MPU6050 read</td>
+<td>Static placement</td>
+<td></td>
+</tr>
+<tr>
+<td>T08</td>
+<td>Freefall detection</td>
+<td>Drop device 1m</td>
+<td>Freefall flag set within 150ms</td>
+</tr>
+<tr>
+<td>T09</td>
+<td>Impact detection</td>
+<td>Drop onto surface</td>
+<td>Impact flag set,</td>
+</tr>
+<tr>
+<td>T10</td>
+<td>Post-fall stillness</td>
+<td>Leave still after drop</td>
+<td>Stillness confirmed within 2s</td>
+</tr>
+<tr>
+<td>T11</td>
+<td>Full fall sequence</td>
+<td>Drop 1m, leave still</td>
+<td>Fall event triggered, callback fires</td>
+</tr>
+<tr>
+<td>T12</td>
+<td>False positive — walking</td>
+<td>Walk briskly</td>
+<td>No fall triggered</td>
+</tr>
+<tr>
+<td>T13</td>
+<td>False positive — stairs</td>
+<td>Walk down stairs</td>
+<td>No fall triggered</td>
+</tr>
+<tr>
+<td>T14</td>
+<td>False positive — sitting down fast</td>
+<td>Sit down quickly</td>
+<td>No fall triggered</td>
+</tr>
+<tr>
+<td>T15</td>
+<td>Sensitivity threshold</td>
+<td>Adjust threshold in NVS</td>
+<td>Fall triggers at new threshold</td>
+</tr>
+<tr>
+<td>T16</td>
+<td>50-drop test</td>
+<td>Drop 50 times</td>
+<td>≥48 correct detections (96%+)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="phase-3-sos-state-machine-tests-8-tests">Phase 3 — SOS State
+Machine Tests (8 tests)</h2>
+<table>
+<colgroup>
+<col style="width: 9%" />
+<col style="width: 14%" />
+<col style="width: 35%" />
+<col style="width: 40%" />
+</colgroup>
+<thead>
+<tr>
+<th>ID</th>
+<th>Test</th>
+<th>Input / Action</th>
+<th>Expected Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T17</td>
+<td>Fall → SOS_ALERT</td>
+<td>Trigger fall</td>
+<td>State = SOS_ALERT, vibrate 3x, red LED blink</td>
+</tr>
+<tr>
+<td>T18</td>
+<td>Button → SOS_ALERT</td>
+<td>Press SOS button</td>
+<td>State = SOS_ALERT within 500ms</td>
+</tr>
+<tr>
+<td>T19</td>
+<td>Cancel window timer</td>
+<td>Enter SOS_ALERT</td>
+<td>10 second countdown visible on serial</td>
+</tr>
+<tr>
+<td>T20</td>
+<td>Cancel button press</td>
+<td>Press button within 10s</td>
+<td>State = CANCELLED, green LED, no call</td>
+</tr>
+<tr>
+<td>T21</td>
+<td>No cancel → CALLING</td>
+<td>Wait 10s</td>
+<td>State = CALLING, SIM dials</td>
+</tr>
+<tr>
+<td>T22</td>
+<td>CALLING → IN_CALL</td>
+<td>Call connects</td>
+<td>State = IN_CALL, green LED solid</td>
+</tr>
+<tr>
+<td>T23</td>
+<td>Call end → IDLE</td>
+<td>Hang up</td>
+<td>State = IDLE, low power</td>
+</tr>
+<tr>
+<td>T24</td>
+<td>SOS during IN_CALL</td>
+<td>Button press</td>
+<td>Ignored — already in call</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="phase-4-4g-communications-tests-10-tests">Phase 4 — 4G
+Communications Tests (10 tests)</h2>
+<table>
+<colgroup>
+<col style="width: 9%" />
+<col style="width: 14%" />
+<col style="width: 35%" />
+<col style="width: 40%" />
+</colgroup>
+<thead>
+<tr>
+<th>ID</th>
+<th>Test</th>
+<th>Input / Action</th>
+<th>Expected Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T25</td>
+<td>SIM7670G power on</td>
+<td>Boot sequence</td>
+<td>AT OK response within 10s</td>
+</tr>
+<tr>
+<td>T26</td>
+<td>Network registration</td>
+<td>Insert SIM (Airtel)</td>
+<td>AT+CREG returns registered (1 or 5)</td>
+</tr>
+<tr>
+<td>T27</td>
+<td>Signal strength</td>
+<td>Check CSQ</td>
+<td>AT+CSQ returns ≥10 (−93 dBm or better)</td>
+</tr>
+<tr>
+<td>T28</td>
+<td>SMS send</td>
+<td>Trigger SOS</td>
+<td>SMS received on caregiver phone within 30s</td>
+</tr>
+<tr>
+<td>T29</td>
+<td>SMS content</td>
+<td>Receive SMS</td>
+<td>Message contains name, time, MAARINA signature</td>
+</tr>
+<tr>
+<td>T30</td>
+<td>Voice call dial</td>
+<td>Trigger call</td>
+<td>Phone rings at caregiver number</td>
+</tr>
+<tr>
+<td>T31</td>
+<td>Call connect</td>
+<td>Answer call</td>
+<td>IN_CALL state, audio path active</td>
+</tr>
+<tr>
+<td>T32</td>
+<td>Busy fallback</td>
+<td>First number busy</td>
+<td>Dials second number within 5s</td>
+</tr>
+<tr>
+<td>T33</td>
+<td>No answer fallback</td>
+<td>No answer 30s</td>
+<td>Dials second number, then third</td>
+</tr>
+<tr>
+<td>T34</td>
+<td>Jio SIM test</td>
+<td>Repeat T26–T31 with Jio SIM</td>
+<td>All pass</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="phase-5-audio-tests-8-tests">Phase 5 — Audio Tests (8
+tests)</h2>
+<table>
+<colgroup>
+<col style="width: 9%" />
+<col style="width: 14%" />
+<col style="width: 35%" />
+<col style="width: 40%" />
+</colgroup>
+<thead>
+<tr>
+<th>ID</th>
+<th>Test</th>
+<th>Input / Action</th>
+<th>Expected Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T35</td>
+<td>Mic capture</td>
+<td>Speak near device</td>
+<td>I2S data non-zero, waveform visible</td>
+</tr>
+<tr>
+<td>T36</td>
+<td>Mic audio quality</td>
+<td>Speak “Help” clearly</td>
+<td>Waveform intelligible, SNR &gt; 20dB</td>
+</tr>
+<tr>
+<td>T37</td>
+<td>Speaker playback</td>
+<td>Trigger audio prompt</td>
+<td>“Help is on the way, stay calm” plays audibly</td>
+</tr>
+<tr>
+<td>T38</td>
+<td>Speaker volume</td>
+<td>1m distance</td>
+<td>Audio clearly audible without distortion</td>
+</tr>
+<tr>
+<td>T39</td>
+<td>2-way call audio</td>
+<td>SOS call active</td>
+<td>Caregiver can hear device, device can hear caregiver</td>
+</tr>
+<tr>
+<td>T40</td>
+<td>Half-duplex mute</td>
+<td>Prompt playing</td>
+<td>Mic muted during playback, no echo</td>
+</tr>
+<tr>
+<td>T41</td>
+<td>Audio after sleep</td>
+<td>Wake from deep sleep</td>
+<td>Audio works without reinitialization</td>
+</tr>
+<tr>
+<td>T42</td>
+<td>Concurrent I2S</td>
+<td>Mic + speaker active</td>
+<td>No I2S conflicts, no crashes</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="phase-6-power-management-tests-6-tests">Phase 6 — Power
+Management Tests (6 tests)</h2>
+<table>
+<colgroup>
+<col style="width: 9%" />
+<col style="width: 14%" />
+<col style="width: 35%" />
+<col style="width: 40%" />
+</colgroup>
+<thead>
+<tr>
+<th>ID</th>
+<th>Test</th>
+<th>Input / Action</th>
+<th>Expected Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T43</td>
+<td>Deep sleep entry</td>
+<td>No activity 60s</td>
+<td>Sleep current &lt; 50µA measured</td>
+</tr>
+<tr>
+<td>T44</td>
+<td>Button wake</td>
+<td>Press SOS in sleep</td>
+<td>Wake within 500ms, SOS_ALERT state</td>
+</tr>
+<tr>
+<td>T45</td>
+<td>Motion wake</td>
+<td>Drop device while sleeping</td>
+<td>MPU6050 INT wakes device, fall detected</td>
+</tr>
+<tr>
+<td>T46</td>
+<td>Battery read</td>
+<td>Check ADC GPIO16</td>
+<td>Voltage within ±0.1V of multimeter reading</td>
+</tr>
+<tr>
+<td>T47</td>
+<td>Low battery warning</td>
+<td>Discharge to 20%</td>
+<td>Vibrate 3x, red LED slow blink</td>
+</tr>
+<tr>
+<td>T48</td>
+<td>Battery life standby</td>
+<td>Full charge, standby</td>
+<td>&gt;48 hours before low battery warning</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="phase-7-integration-tests-5-tests">Phase 7 — Integration Tests
+(5 tests)</h2>
+<table>
+<colgroup>
+<col style="width: 9%" />
+<col style="width: 14%" />
+<col style="width: 35%" />
+<col style="width: 40%" />
+</colgroup>
+<thead>
+<tr>
+<th>ID</th>
+<th>Test</th>
+<th>Input / Action</th>
+<th>Expected Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T49</td>
+<td>End-to-end SOS</td>
+<td>Drop device, leave still</td>
+<td>SMS + call within 20s</td>
+</tr>
+<tr>
+<td>T50</td>
+<td>End-to-end cancel</td>
+<td>Drop device, press cancel</td>
+<td>No SMS, no call</td>
+</tr>
+<tr>
+<td>T51</td>
+<td>Multi-caregiver</td>
+<td>#1 busy, #2 busy, #3 answers</td>
+<td>Call connects on #3, SMS sent to all 3</td>
+</tr>
+<tr>
+<td>T52</td>
+<td>Real-world wear test</td>
+<td>Wear for 8 hours, normal activity</td>
+<td>No false positives, battery &gt; 60%</td>
+</tr>
+<tr>
+<td>T53</td>
+<td>Network loss recovery</td>
+<td>Remove SIM mid-operation</td>
+<td>Device recovers, retries on SIM reinsertion</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="phase-8-production-tests-3-tests">Phase 8 — Production Tests (3
+tests)</h2>
+<table>
+<colgroup>
+<col style="width: 9%" />
+<col style="width: 14%" />
+<col style="width: 35%" />
+<col style="width: 40%" />
+</colgroup>
+<thead>
+<tr>
+<th>ID</th>
+<th>Test</th>
+<th>Input / Action</th>
+<th>Expected Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T54</td>
+<td>PCB assembly test</td>
+<td>Flash fresh PCB</td>
+<td>All components respond (I2C, UART, ADC, I2S)</td>
+</tr>
+<tr>
+<td>T55</td>
+<td>OTA firmware update</td>
+<td>Push new firmware via HTTPS</td>
+<td>Device updates, reboots, new version confirmed</td>
+</tr>
+<tr>
+<td>T56</td>
+<td>10-unit batch test</td>
+<td>Run T01–T53 on 10 units</td>
+<td>All 10 units pass ≥50/53 tests</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="test-execution-log-template">Test Execution Log Template</h2>
+<pre><code>Date: ____________
+Firmware version: ____________
+Tester: ____________
+Hardware revision: ____________
+
+| ID  | Result | Notes |
+|-----|--------|-------|
+| T01 | PASS   |       |
+| T02 | PASS   |       |
+...
+
+Total: __ / 56 passed</code></pre>
+<hr />
+<h2 id="pass-criteria">Pass Criteria</h2>
+<table>
+<thead>
+<tr>
+<th>Phase</th>
+<th>Required Pass Rate</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Phases 1–3</td>
+<td>100%</td>
+</tr>
+<tr>
+<td>Phase 4 (comms)</td>
+<td>≥90%</td>
+</tr>
+<tr>
+<td>Phase 5 (audio)</td>
+<td>≥87%</td>
+</tr>
+<tr>
+<td>Phase 6 (power)</td>
+<td>100%</td>
+</tr>
+<tr>
+<td>Phases 7–8</td>
+<td>≥90%</td>
+</tr>
+<tr>
+<td><strong>Overall</strong></td>
+<td><strong>≥50 / 56</strong></td>
+</tr>
+</tbody>
+</table>

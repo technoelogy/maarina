@@ -1,0 +1,277 @@
+<h1 id="maarina-alert-8-phase-build-roadmap">MAARINA Alert — 8 Phase
+Build Roadmap</h1>
+<hr />
+<h2 id="phase-overview">Phase Overview</h2>
+<table>
+<colgroup>
+<col style="width: 24%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 34%" />
+</colgroup>
+<thead>
+<tr>
+<th>Phase</th>
+<th>Name</th>
+<th>Goal</th>
+<th>Duration</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Foundation</td>
+<td>Dev environment, ESP32-S3 blink, I2C scan</td>
+<td>Week 1</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Fall Detection</td>
+<td>MPU6050 read, fall threshold algorithm</td>
+<td>Week 2</td>
+</tr>
+<tr>
+<td>3</td>
+<td>SOS Trigger</td>
+<td>Button + fall → SOS state machine</td>
+<td>Week 3</td>
+</tr>
+<tr>
+<td>4</td>
+<td>4G Comms</td>
+<td>SIM7670G AT commands, SMS, voice call</td>
+<td>Week 4–5</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Audio</td>
+<td>INMP441 mic + MAX98357 speaker, 2-way audio</td>
+<td>Week 6</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Power Management</td>
+<td>Deep sleep, battery monitor, wake sources</td>
+<td>Week 7</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Integration</td>
+<td>All modules together, field testing</td>
+<td>Week 8–9</td>
+</tr>
+<tr>
+<td>8</td>
+<td>Production</td>
+<td>PCB, enclosure, documentation, open source release</td>
+<td>Week 10–12</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="phase-1-foundation">Phase 1 — Foundation</h2>
+<p><strong>Goal:</strong> Working ESP32-S3 dev environment, I2C scan
+confirms MPU6050 detected.</p>
+<p><strong>Deliverables:</strong> - ESP-IDF installed and working -
+ESP32-S3 blink LED on GPIO14 - I2C scan showing MPU6050 at address 0x68
+- UART monitor working at 115200 baud - Git repo initialized and
+pushed</p>
+<p><strong>Claude Prompt:</strong></p>
+<pre><code>I&#39;m building MAARINA — a wearable SOS device on ESP32-S3.
+Help me set up ESP-IDF v5.x on macOS, create a new project,
+blink an LED on GPIO14, and run an I2C scanner to verify
+MPU6050 is detected at address 0x68. Show me the complete
+CMakeLists.txt, main.c, and how to flash via USB.</code></pre>
+<hr />
+<h2 id="phase-2-fall-detection">Phase 2 — Fall Detection</h2>
+<p><strong>Goal:</strong> Read MPU6050 accelerometer, detect fall events
+with tuned threshold.</p>
+<p><strong>Deliverables:</strong> - MPU6050 driver reading accel X/Y/Z
+at 100Hz - Fall detection algorithm (sudden acceleration spike →
+freefall → impact) - Serial output showing fall detected / no fall -
+Threshold tunable via NVS config - Unit tests for fall algorithm</p>
+<p><strong>Algorithm Overview:</strong></p>
+<pre><code>1. Read accel magnitude: |a| = sqrt(ax² + ay² + az²)
+2. Freefall detect: |a| &lt; 0.3g for &gt;100ms
+3. Impact detect: |a| &gt; 2.5g within 500ms after freefall
+4. Confirm: sustained low movement for 2s after impact
+5. Trigger SOS if all 3 conditions met</code></pre>
+<p><strong>Claude Prompt:</strong></p>
+<pre><code>For MAARINA (ESP32-S3 + MPU6050 on I2C GPIO1/GPIO2):
+Write a fall detection driver in C using ESP-IDF.
+Read accelerometer at 100Hz, implement a 3-stage algorithm:
+freefall detection (|a| &lt; 0.3g), impact detection (|a| &gt; 2.5g),
+and post-fall stillness confirmation (2 seconds).
+Include a FreeRTOS task, configurable thresholds stored in NVS,
+and a callback function triggered on confirmed fall.</code></pre>
+<hr />
+<h2 id="phase-3-sos-trigger">Phase 3 — SOS Trigger</h2>
+<p><strong>Goal:</strong> Complete SOS state machine — fall OR button
+press triggers SOS flow with 10s cancel window.</p>
+<p><strong>Deliverables:</strong> - SOS state machine (IDLE → SOS_ALERT
+→ CALLING → IN_CALL → IDLE) - 10 second cancel window with button press
+cancel - LED patterns for each state - Vibration motor feedback - SOS
+event logged to NVS with timestamp</p>
+<p><strong>Claude Prompt:</strong></p>
+<pre><code>For MAARINA (ESP32-S3), implement a SOS state machine in C with ESP-IDF FreeRTOS.
+States: IDLE, SOS_ALERT, CALLING, IN_CALL, CANCELLED.
+Transitions:
+- Fall detected OR button press → SOS_ALERT
+- 10s timeout with no cancel → CALLING
+- Button press during SOS_ALERT → CANCELLED → IDLE
+- Call connected → IN_CALL
+- Call ended → IDLE
+Include LED patterns (red blink = alert, solid = in call, green = idle),
+vibration motor feedback, and NVS event logging.</code></pre>
+<hr />
+<h2 id="phase-4-4g-communications">Phase 4 — 4G Communications</h2>
+<p><strong>Goal:</strong> SIM7670G sends SMS and makes voice call on SOS
+trigger.</p>
+<p><strong>Deliverables:</strong> - SIM7670G power-on sequence via
+PWRKEY - AT command driver with timeout and retry - SMS send to
+configured caregiver number - Voice call dial, detect
+connect/busy/no-answer - Fallback: try up to 3 numbers in sequence -
+Phone numbers stored in NVS</p>
+<p><strong>Claude Prompt:</strong></p>
+<pre><code>For MAARINA (ESP32-S3 + SIM7670G on UART GPIO8/GPIO9 at 115200 baud):
+Write a complete AT command driver in C using ESP-IDF.
+Implement:
+1. Power-on sequence (PWRKEY GPIO10 LOW for 1s, wait for AT OK)
+2. Network registration check (AT+CREG?)
+3. SMS send function (AT+CMGF=1 text mode)
+4. Voice call dial (ATD+91XXXXXXXXXX)
+5. Call status detection (CONNECT, BUSY, NO ANSWER)
+6. Sequential fallback: try up to 3 phone numbers stored in NVS
+7. SMS message format: &quot;MAARINA SOS: [name] needs help. Time: [time]&quot;
+Include error handling and AT response parsing.</code></pre>
+<hr />
+<h2 id="phase-5-audio">Phase 5 — Audio</h2>
+<p><strong>Goal:</strong> 2-way audio during SOS call — mic captures
+voice, speaker plays caller audio.</p>
+<p><strong>Deliverables:</strong> - INMP441 I2S mic capture at 16kHz -
+MAX98357 I2S speaker playback - Audio routed through SIM7670G during
+voice call - Pre-recorded voice prompt: “Help is on the way, stay calm”
+- Mic mute during playback (half-duplex management)</p>
+<p><strong>Claude Prompt:</strong></p>
+<pre><code>For MAARINA (ESP32-S3):
+Implement I2S audio using ESP-IDF for:
+1. INMP441 microphone on I2S0 (WS=GPIO4, SCK=GPIO5, SD=GPIO6) at 16kHz 16-bit mono
+2. MAX98357A speaker on I2S1 (LRC=GPIO4, BCLK=GPIO5, DIN=GPIO7)
+3. Audio routing to SIM7670G for 2-way voice call (PCM audio via UART or DAC)
+4. Play a short WAV prompt stored in SPIFFS on SOS trigger
+5. Half-duplex control: mute mic while speaker plays
+Show the I2S config structs, DMA buffer setup, and FreeRTOS task structure.</code></pre>
+<hr />
+<h2 id="phase-6-power-management">Phase 6 — Power Management</h2>
+<p><strong>Goal:</strong> Maximize battery life — deep sleep between
+events, smart wake sources.</p>
+<p><strong>Deliverables:</strong> - Deep sleep with MPU6050 motion
+interrupt wake (GPIO3) - Battery voltage ADC read on GPIO16 - Low
+battery warning (vibrate + LED at &lt;20%) - Shutdown at &lt;5% battery
+with NVS state save - Wake-on-button (SOS button as RTC GPIO wake
+source) - Sleep current target: &lt;50µA</p>
+<p><strong>Claude Prompt:</strong></p>
+<pre><code>For MAARINA (ESP32-S3 + LiPo 500mAh):
+Implement power management using ESP-IDF:
+1. Configure ESP32-S3 deep sleep with two wake sources:
+   - RTC GPIO wake on SOS button (GPIO12, active LOW)
+   - EXT1 wake on MPU6050 interrupt (GPIO3, active HIGH)
+2. Battery voltage read via ADC on GPIO16 (100k/100k divider, 3.3V ref)
+3. Battery level: 100%=4.2V, 20%=3.6V, 5%=3.4V
+4. Low battery: vibrate 3 times + red LED slow blink
+5. Critical battery: save state to NVS, shut down gracefully
+6. On wake: restore state, log wake reason via esp_sleep_get_wakeup_cause()</code></pre>
+<hr />
+<h2 id="phase-7-integration">Phase 7 — Integration</h2>
+<p><strong>Goal:</strong> All modules working together — real-world SOS
+test with family member as caregiver.</p>
+<p><strong>Deliverables:</strong> - Full integration test: drop device →
+SMS received in &lt;15s → call connects - 3 caregiver numbers configured
+via BLE provisioning app (or USB serial) - Field test: 50+ fall
+simulations, &lt;2% false positives - Battery life test: &gt;48 hours
+standby - SIM card tested on Airtel/Jio/BSNL</p>
+<p><strong>Claude Prompt:</strong></p>
+<pre><code>For MAARINA — help me write an integration test suite in Python
+that connects to the device via USB serial and:
+1. Sends simulated fall events
+2. Verifies SOS state machine transitions
+3. Confirms SMS delivery (via Twilio webhook or manual check)
+4. Logs test results to CSV
+5. Reports pass/fail for each of the 50 test cases in TESTING_PROTOCOL.md
+Also help me write a BLE provisioning flow to configure caregiver phone numbers
+without needing a dedicated app — using a simple BLE serial terminal.</code></pre>
+<hr />
+<h2 id="phase-8-production">Phase 8 — Production</h2>
+<p><strong>Goal:</strong> Custom PCB, 3D printed enclosure, open source
+release, first 10 units to pilot families.</p>
+<p><strong>Deliverables:</strong> - KiCad schematic and PCB layout
+(50x30mm, 2-layer) - Gerbers ordered from JLCPCB - 3D printed enclosure
+(PLA, wristband mount, OpenSCAD source) - Firmware OTA update via
+SIM7670G (HTTPS) - GitHub release v1.0.0 with all documentation - 10
+pilot units assembled and shipped to elderly women in Chennai/Mumbai -
+MAARINA website live</p>
+<p><strong>Claude Prompt:</strong></p>
+<pre><code>For MAARINA — help me:
+1. Write a KiCad schematic in netlist format for the full MAARINA circuit
+   (ESP32-S3-WROOM-1, SIM7670G, MPU6050, INMP441, MAX98357, TP4056, MT3608, AMS1117)
+2. Generate JLCPCB-compatible BOM and CPL files for SMT assembly
+3. Write an OpenSCAD model for a 65x35x12mm enclosure with:
+   - USB-C cutout
+   - SOS button hole (6mm)
+   - Speaker grille (3x3 holes)
+   - Wristband mounts (22mm standard strap)
+4. Implement OTA firmware update over HTTPS using ESP-IDF esp_https_ota
+5. Write the GitHub release checklist and open source license recommendation</code></pre>
+<hr />
+<h2 id="milestone-summary">Milestone Summary</h2>
+<table>
+<thead>
+<tr>
+<th>Milestone</th>
+<th>Target</th>
+<th>Success Criteria</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>M1</td>
+<td>End Week 1</td>
+<td>MPU6050 detected, LED blinking</td>
+</tr>
+<tr>
+<td>M2</td>
+<td>End Week 2</td>
+<td>Fall detected in 95% of drop tests</td>
+</tr>
+<tr>
+<td>M3</td>
+<td>End Week 3</td>
+<td>SOS state machine verified</td>
+</tr>
+<tr>
+<td>M4</td>
+<td>End Week 5</td>
+<td>SMS sent, call connected on real SIM</td>
+</tr>
+<tr>
+<td>M5</td>
+<td>End Week 6</td>
+<td>2-way audio working in call</td>
+</tr>
+<tr>
+<td>M6</td>
+<td>End Week 7</td>
+<td>48hr battery life confirmed</td>
+</tr>
+<tr>
+<td>M7</td>
+<td>End Week 9</td>
+<td>50-test integration suite passing</td>
+</tr>
+<tr>
+<td>M8</td>
+<td>End Week 12</td>
+<td>10 pilot units shipped</td>
+</tr>
+</tbody>
+</table>

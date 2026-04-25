@@ -1,0 +1,342 @@
+<h1 id="maarina-github-setup-guide">MAARINA — GitHub Setup Guide</h1>
+<p><strong>Repo:</strong> https://github.com/technoelogy/maarina<br />
+<strong>License:</strong> MIT<br />
+<strong>Default branch:</strong> main</p>
+<hr />
+<h2 id="repository-structure">Repository Structure</h2>
+<pre><code>maarina/
+├── martha.md                  # The soul of MAARINA — never modify
+├── README.md                  # Project overview
+├── CONTRIBUTING.md            # Contributor guide
+├── LICENSE                    # MIT License
+├── .gitignore
+├── docs/
+│   ├── HARDWARE_BOM.md
+│   ├── ARCHITECTURE.md
+│   ├── WIRING_GUIDE.md
+│   ├── PHASES.md
+│   ├── TESTING_PROTOCOL.md
+│   └── GITHUB_SETUP.md
+├── firmware/
+│   └── main/                  # ESP-IDF firmware source
+├── hardware/                  # KiCad schematic + PCB files
+├── app/                       # Companion app (future)
+├── community/                 # Community resources
+└── tests/                     # Test scripts</code></pre>
+<hr />
+<h2 id="branch-strategy">Branch Strategy</h2>
+<table>
+<thead>
+<tr>
+<th>Branch</th>
+<th>Purpose</th>
+<th>Who pushes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>main</code></td>
+<td>Stable, tested code</td>
+<td>Maintainer only (via PR)</td>
+</tr>
+<tr>
+<td><code>dev</code></td>
+<td>Integration branch</td>
+<td>Core team</td>
+</tr>
+<tr>
+<td><code>phase/1-foundation</code></td>
+<td>Phase 1 work</td>
+<td>Feature branch</td>
+</tr>
+<tr>
+<td><code>phase/2-fall-detection</code></td>
+<td>Phase 2 work</td>
+<td>Feature branch</td>
+</tr>
+<tr>
+<td><code>phase/3-sos</code></td>
+<td>Phase 3 work</td>
+<td>Feature branch</td>
+</tr>
+<tr>
+<td><code>phase/4-comms</code></td>
+<td>Phase 4 work</td>
+<td>Feature branch</td>
+</tr>
+<tr>
+<td><code>phase/5-audio</code></td>
+<td>Phase 5 work</td>
+<td>Feature branch</td>
+</tr>
+<tr>
+<td><code>phase/6-power</code></td>
+<td>Phase 6 work</td>
+<td>Feature branch</td>
+</tr>
+<tr>
+<td><code>phase/7-integration</code></td>
+<td>Phase 7 work</td>
+<td>Feature branch</td>
+</tr>
+<tr>
+<td><code>phase/8-production</code></td>
+<td>Phase 8 work</td>
+<td>Feature branch</td>
+</tr>
+<tr>
+<td><code>fix/short-description</code></td>
+<td>Bug fixes</td>
+<td>Anyone via PR</td>
+</tr>
+<tr>
+<td><code>docs/short-description</code></td>
+<td>Documentation</td>
+<td>Anyone via PR</td>
+</tr>
+</tbody>
+</table>
+<h3 id="flow">Flow</h3>
+<pre><code>phase/X branch → dev (PR + review) → main (PR + review + tests pass)</code></pre>
+<hr />
+<h2 id="commit-conventions">Commit Conventions</h2>
+<p>Format: <code>type(scope): short description</code></p>
+<h3 id="types">Types</h3>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>When to use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>feat</code></td>
+<td>New feature or capability</td>
+</tr>
+<tr>
+<td><code>fix</code></td>
+<td>Bug fix</td>
+</tr>
+<tr>
+<td><code>docs</code></td>
+<td>Documentation only</td>
+</tr>
+<tr>
+<td><code>test</code></td>
+<td>Test cases</td>
+</tr>
+<tr>
+<td><code>hw</code></td>
+<td>Hardware / schematic / BOM changes</td>
+</tr>
+<tr>
+<td><code>refactor</code></td>
+<td>Code restructure, no behavior change</td>
+</tr>
+<tr>
+<td><code>chore</code></td>
+<td>Build system, CI, config</td>
+</tr>
+<tr>
+<td><code>perf</code></td>
+<td>Performance improvement</td>
+</tr>
+</tbody>
+</table>
+<h3 id="scopes">Scopes</h3>
+<p><code>fall</code>, <code>sos</code>, <code>comms</code>,
+<code>audio</code>, <code>power</code>, <code>ui</code>,
+<code>storage</code>, <code>bom</code>, <code>pcb</code>,
+<code>enclosure</code>, <code>ci</code></p>
+<h3 id="examples">Examples</h3>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">feat</span><span class="er">(</span><span class="ex">fall</span><span class="kw">)</span><span class="bu">:</span> add 3-stage fall detection algorithm</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ex">fix</span><span class="er">(</span><span class="ex">comms</span><span class="kw">)</span><span class="bu">:</span> retry AT command on SIM7670G timeout</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="ex">docs</span><span class="er">(</span><span class="ex">bom</span><span class="kw">)</span><span class="bu">:</span> add Robu.in purchase links</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="bu">test</span><span class="er">(</span><span class="ex">sos</span><span class="kw">)</span><span class="bu">:</span> add cancel window boundary tests</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="ex">hw</span><span class="er">(</span><span class="ex">pcb</span><span class="kw">)</span><span class="bu">:</span> add bulk capacitors to SIM7670G power rail</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="ex">feat</span><span class="er">(</span><span class="ex">power</span><span class="kw">)</span><span class="bu">:</span> implement deep sleep with motion wake</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="ex">chore</span><span class="er">(</span><span class="ex">ci</span><span class="kw">)</span><span class="bu">:</span> add ESP-IDF build workflow</span></code></pre></div>
+<h3 id="first-commit-already-done">First commit (already done)</h3>
+<pre><code>feat: MAARINA initial commit — For Martha</code></pre>
+<hr />
+<h2 id="initial-github-setup-commands">Initial GitHub Setup
+Commands</h2>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. Navigate to project</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> ~/maarina</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. Initialize git (already done)</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> init</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. Stage all files</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add .</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="co"># 4. First commit</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">&quot;feat: MAARINA initial commit — For Martha&quot;</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="co"># 5. Set branch to main</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> branch <span class="at">-M</span> main</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a><span class="co"># 6. Add remote</span></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> remote add origin https://github.com/technoelogy/maarina.git</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a><span class="co"># 7. Push</span></span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> push <span class="at">-u</span> origin main</span></code></pre></div>
+<hr />
+<h2 id="github-repository-settings">GitHub Repository Settings</h2>
+<h3 id="recommended-settings-on-github.com-repo-settings">Recommended
+settings (on github.com → repo → Settings):</h3>
+<p><strong>General:</strong> - Description:
+<code>Open source wearable SOS device for elderly people. Built in memory of Martha.</code>
+- Website: (add when ready) - Topics: <code>esp32</code>,
+<code>iot</code>, <code>wearable</code>, <code>eldercare</code>,
+<code>sos</code>, <code>india</code>, <code>open-source</code>,
+<code>embedded</code></p>
+<p><strong>Branches:</strong> - Default branch: <code>main</code> -
+Branch protection on <code>main</code>: - Require pull request before
+merging - Require 1 approving review - Dismiss stale reviews</p>
+<p><strong>Features:</strong> - Issues: ✅ enabled - Projects: ✅
+enabled (use for phase tracking) - Wiki: ✅ enabled (for community docs)
+- Discussions: ✅ enabled (for community Q&amp;A)</p>
+<hr />
+<h2 id="issue-labels">Issue Labels</h2>
+<p>Create these labels on GitHub:</p>
+<table>
+<thead>
+<tr>
+<th>Label</th>
+<th>Color</th>
+<th>Use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>phase:1</code> through <code>phase:8</code></td>
+<td>Blue</td>
+<td>Phase tracking</td>
+</tr>
+<tr>
+<td><code>hardware</code></td>
+<td>Orange</td>
+<td>PCB, BOM, wiring</td>
+</tr>
+<tr>
+<td><code>firmware</code></td>
+<td>Purple</td>
+<td>ESP-IDF code</td>
+</tr>
+<tr>
+<td><code>audio</code></td>
+<td>Yellow</td>
+<td>Mic/speaker</td>
+</tr>
+<tr>
+<td><code>comms</code></td>
+<td>Green</td>
+<td>SIM7670G, SMS, call</td>
+</tr>
+<tr>
+<td><code>fall-detection</code></td>
+<td>Red</td>
+<td>MPU6050, algorithm</td>
+</tr>
+<tr>
+<td><code>power</code></td>
+<td>Teal</td>
+<td>Battery, sleep</td>
+</tr>
+<tr>
+<td><code>good first issue</code></td>
+<td>Light green</td>
+<td>For new contributors</td>
+</tr>
+<tr>
+<td><code>help wanted</code></td>
+<td>Magenta</td>
+<td>Open to community</td>
+</tr>
+<tr>
+<td><code>india</code></td>
+<td>Saffron</td>
+<td>India-specific (SIM, sourcing)</td>
+</tr>
+<tr>
+<td><code>martha</code></td>
+<td>White</td>
+<td>Sacred — core mission decisions</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="github-actions-ci-add-to-.githubworkflowsbuild.yml">GitHub
+Actions CI (add to <code>.github/workflows/build.yml</code>)</h2>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">name</span><span class="kw">:</span><span class="at"> MAARINA Firmware Build</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="fu">on</span><span class="kw">:</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">push</span><span class="kw">:</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">branches</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="at">main</span><span class="kw">,</span><span class="at"> dev</span><span class="kw">,</span><span class="at"> phase/</span><span class="ot">**]</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">pull_request</span><span class="kw">:</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">branches</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="at">main</span><span class="kw">,</span><span class="at"> dev</span><span class="kw">]</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="fu">jobs</span><span class="kw">:</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">build</span><span class="kw">:</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">runs-on</span><span class="kw">:</span><span class="at"> ubuntu-latest</span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="at">    steps:</span></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a><span class="at">      - uses: actions/checkout@v4</span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a><span class="at">        with:</span></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a><span class="at">          submodules: recursive</span></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a><span class="at">      - name: Setup ESP-IDF</span></span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a><span class="at">        uses: espressif/esp-idf-ci-action@v1</span></span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a><span class="at">        with:</span></span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a><span class="at">          esp_idf_version: v5.2.1</span></span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a><span class="at">          target: esp32s3</span></span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a><span class="at">      - name: Build firmware</span></span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a><span class="at">        run: |</span></span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a><span class="at">          cd firmware/main</span></span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a><span class="at">          idf.py build</span></span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a><span class="at">      - name: Run unit tests</span></span>
+<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a><span class="at">        run: |</span></span>
+<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a><span class="at">          cd tests</span></span>
+<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a><span class="at">          python -m pytest --tb=short</span></span></code></pre></div>
+<hr />
+<h2 id="release-process">Release Process</h2>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Tag a release</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> tag <span class="at">-a</span> v1.0.0 <span class="at">-m</span> <span class="st">&quot;MAARINA Alert v1.0.0 — For Martha&quot;</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> push origin v1.0.0</span></code></pre></div>
+<h3 id="release-checklist">Release checklist:</h3>
+<ul class="task-list">
+<li><label><input type="checkbox" />All Phase tests passing
+(≥50/56)</label></li>
+<li><label><input type="checkbox" />BOM finalized with current
+prices</label></li>
+<li><label><input type="checkbox" />Wiring guide reviewed</label></li>
+<li><label><input type="checkbox" />README updated with setup
+instructions</label></li>
+<li><label><input type="checkbox" />Firmware binary attached to
+release</label></li>
+<li><label><input type="checkbox" />KiCad files included</label></li>
+<li><label><input type="checkbox" />Enclosure STL included</label></li>
+<li><label><input type="checkbox" />CHANGELOG updated</label></li>
+</ul>
+<hr />
+<h2 id="contributing-quick-reference">CONTRIBUTING Quick Reference</h2>
+<pre><code>1. Fork the repo
+2. Create branch: git checkout -b feat/your-feature
+3. Commit: git commit -m &quot;feat(scope): description&quot;
+4. Push: git push origin feat/your-feature
+5. Open Pull Request to dev branch
+6. Add test cases if adding features
+7. All PRs reviewed before merge to main</code></pre>
+<hr />
+<h2 id="martha.md-is-sacred">martha.md is Sacred</h2>
+<p>The file <code>martha.md</code> is the soul of this project.<br />
+It must never be modified, reformatted, or deleted.<br />
+Any PR touching <code>martha.md</code> will be closed without
+review.</p>

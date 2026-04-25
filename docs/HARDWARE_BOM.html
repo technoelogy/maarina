@@ -1,0 +1,321 @@
+<h1 id="maarina-alert-hardware-bill-of-materials">MAARINA Alert —
+Hardware Bill of Materials</h1>
+<p><strong>Target Price:</strong> Rs 2,499 (assembled)<br />
+<strong>Form Factor:</strong> Wristband / pendant wearable<br />
+<strong>Connectivity:</strong> 4G LTE (SIM7670G) + BLE 5.0<br />
+<strong>Power:</strong> 500mAh LiPo, USB-C charging</p>
+<hr />
+<h2 id="core-components">Core Components</h2>
+<table>
+<colgroup>
+<col style="width: 4%" />
+<col style="width: 15%" />
+<col style="width: 18%" />
+<col style="width: 7%" />
+<col style="width: 23%" />
+<col style="width: 16%" />
+<col style="width: 14%" />
+</colgroup>
+<thead>
+<tr>
+<th>#</th>
+<th>Component</th>
+<th>Description</th>
+<th>Qty</th>
+<th>Unit Price (Rs)</th>
+<th>Total (Rs)</th>
+<th>Buy Link</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>ESP32-S3-WROOM-1</td>
+<td>Main MCU — dual-core 240MHz, WiFi, BLE 5.0</td>
+<td>1</td>
+<td>320</td>
+<td>320</td>
+<td><a href="https://robu.in">Robu.in</a></td>
+</tr>
+<tr>
+<td>2</td>
+<td>SIM7670G</td>
+<td>4G LTE Cat-1 module — SMS, voice, data</td>
+<td>1</td>
+<td>950</td>
+<td>950</td>
+<td><a href="https://evelta.com">Evelta.com</a></td>
+</tr>
+<tr>
+<td>3</td>
+<td>MPU6050</td>
+<td>6-axis IMU — fall detection (accel + gyro)</td>
+<td>1</td>
+<td>80</td>
+<td>80</td>
+<td><a href="https://robu.in">Robu.in</a></td>
+</tr>
+<tr>
+<td>4</td>
+<td>INMP441</td>
+<td>I2S MEMS microphone — voice capture</td>
+<td>1</td>
+<td>120</td>
+<td>120</td>
+<td><a href="https://robu.in">Robu.in</a></td>
+</tr>
+<tr>
+<td>5</td>
+<td>MAX98357A</td>
+<td>I2S audio amplifier — speaker output</td>
+<td>1</td>
+<td>150</td>
+<td>150</td>
+<td><a href="https://evelta.com">Evelta.com</a></td>
+</tr>
+<tr>
+<td>6</td>
+<td>LiPo 500mAh 3.7V</td>
+<td>Rechargeable battery</td>
+<td>1</td>
+<td>180</td>
+<td>180</td>
+<td><a href="https://robu.in">Robu.in</a></td>
+</tr>
+<tr>
+<td>7</td>
+<td>TP4056 Module</td>
+<td>LiPo charger with protection (USB-C)</td>
+<td>1</td>
+<td>30</td>
+<td>30</td>
+<td><a href="https://robu.in">Robu.in</a></td>
+</tr>
+<tr>
+<td>8</td>
+<td>MT3608 Boost</td>
+<td>3.7V → 5V boost converter for SIM7670G</td>
+<td>1</td>
+<td>25</td>
+<td>25</td>
+<td><a href="https://robu.in">Robu.in</a></td>
+</tr>
+<tr>
+<td>9</td>
+<td>AMS1117-3.3</td>
+<td>3.3V LDO regulator for ESP32 + sensors</td>
+<td>1</td>
+<td>10</td>
+<td>10</td>
+<td><a href="https://robu.in">Robu.in</a></td>
+</tr>
+<tr>
+<td>10</td>
+<td>SOS Button</td>
+<td>Tactile push button, 6mm, waterproof rated</td>
+<td>1</td>
+<td>15</td>
+<td>15</td>
+<td><a href="https://robu.in">Robu.in</a></td>
+</tr>
+<tr>
+<td>11</td>
+<td>LED — Red</td>
+<td>SOS / alert indicator</td>
+<td>1</td>
+<td>2</td>
+<td>2</td>
+<td>Local</td>
+</tr>
+<tr>
+<td>12</td>
+<td>LED — Green</td>
+<td>Power / status indicator</td>
+<td>1</td>
+<td>2</td>
+<td>2</td>
+<td>Local</td>
+</tr>
+<tr>
+<td>13</td>
+<td>Vibration Motor</td>
+<td>Haptic feedback — 10mm coin type</td>
+<td>1</td>
+<td>35</td>
+<td>35</td>
+<td><a href="https://robu.in">Robu.in</a></td>
+</tr>
+<tr>
+<td>14</td>
+<td>Small Speaker</td>
+<td>8Ω 1W — voice playback</td>
+<td>1</td>
+<td>40</td>
+<td>40</td>
+<td><a href="https://robu.in">Robu.in</a></td>
+</tr>
+<tr>
+<td>15</td>
+<td>Nano SIM Slot</td>
+<td>Push-push type surface mount</td>
+<td>1</td>
+<td>20</td>
+<td>20</td>
+<td><a href="https://evelta.com">Evelta.com</a></td>
+</tr>
+<tr>
+<td>16</td>
+<td>PCB (custom)</td>
+<td>2-layer, 50x30mm, JLCPCB</td>
+<td>5pcs</td>
+<td>60</td>
+<td>12 per unit</td>
+<td><a href="https://jlcpcb.com">JLCPCB</a></td>
+</tr>
+<tr>
+<td>17</td>
+<td>Enclosure</td>
+<td>3D printed PLA, wristband mount</td>
+<td>1</td>
+<td>80</td>
+<td>80</td>
+<td>Local print</td>
+</tr>
+<tr>
+<td>18</td>
+<td>Misc (caps, resistors, wires)</td>
+<td>Passives</td>
+<td>—</td>
+<td>30</td>
+<td>30</td>
+<td>Local</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="total-bom-cost">Total BOM Cost</h2>
+<table>
+<thead>
+<tr>
+<th>Category</th>
+<th>Cost (Rs)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Core Electronics</td>
+<td>2,059</td>
+</tr>
+<tr>
+<td>PCB</td>
+<td>12</td>
+</tr>
+<tr>
+<td>Enclosure</td>
+<td>80</td>
+</tr>
+<tr>
+<td>Misc</td>
+<td>30</td>
+</tr>
+<tr>
+<td><strong>Total</strong></td>
+<td><strong>~2,181</strong></td>
+</tr>
+<tr>
+<td>Assembly + margin</td>
+<td>~318</td>
+</tr>
+<tr>
+<td><strong>Retail Target</strong></td>
+<td><strong>Rs 2,499</strong></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="supplier-summary">Supplier Summary</h2>
+<table>
+<thead>
+<tr>
+<th>Supplier</th>
+<th>Website</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Robu.in</td>
+<td>https://robu.in</td>
+<td>Best for ESP32, sensors, LiPo</td>
+</tr>
+<tr>
+<td>Evelta.com</td>
+<td>https://evelta.com</td>
+<td>SIM modules, audio ICs</td>
+</tr>
+<tr>
+<td>Amazon India</td>
+<td>https://amazon.in</td>
+<td>Backup source, faster shipping</td>
+</tr>
+<tr>
+<td>JLCPCB</td>
+<td>https://jlcpcb.com</td>
+<td>PCB fabrication, SMT assembly</td>
+</tr>
+<tr>
+<td>Fab India 3D</td>
+<td>Local</td>
+<td>Enclosure printing</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="jlcpcb-ordering-notes">JLCPCB Ordering Notes</h2>
+<ul>
+<li>Board size: 50mm × 30mm</li>
+<li>Layers: 2</li>
+<li>Finish: HASL (lead-free)</li>
+<li>Minimum order: 5 pcs</li>
+<li>Estimated cost: Rs 300 for 5 boards (~Rs 60/unit)</li>
+<li>Turnaround: 7–10 days to India</li>
+</ul>
+<hr />
+<h2 id="component-versions-alternatives">Component Versions /
+Alternatives</h2>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Primary</th>
+<th>Alternative</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MCU</td>
+<td>ESP32-S3-WROOM-1</td>
+<td>ESP32-S3-DevKitC-1 (for prototyping)</td>
+</tr>
+<tr>
+<td>4G Module</td>
+<td>SIM7670G</td>
+<td>A7670E, SIM7600G</td>
+</tr>
+<tr>
+<td>IMU</td>
+<td>MPU6050</td>
+<td>LSM6DS3, ICM-42688-P</td>
+</tr>
+<tr>
+<td>Microphone</td>
+<td>INMP441</td>
+<td>MSM261S4030H0R</td>
+</tr>
+<tr>
+<td>Amp</td>
+<td>MAX98357A</td>
+<td>PAM8403 (analog fallback)</td>
+</tr>
+</tbody>
+</table>

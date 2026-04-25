@@ -1,0 +1,247 @@
+<h1 id="maarina-alert-wiring-guide">MAARINA Alert — Wiring Guide</h1>
+<p><strong>MCU:</strong> ESP32-S3-WROOM-1<br />
+<strong>All voltages:</strong> 3.3V logic unless noted</p>
+<hr />
+<h2 id="esp32-s3-pin-assignment-overview">ESP32-S3 Pin Assignment
+Overview</h2>
+<table>
+<thead>
+<tr>
+<th>GPIO</th>
+<th>Function</th>
+<th>Connected To</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GPIO1</td>
+<td>I2C SDA</td>
+<td>MPU6050 SDA</td>
+</tr>
+<tr>
+<td>GPIO2</td>
+<td>I2C SCL</td>
+<td>MPU6050 SCL</td>
+</tr>
+<tr>
+<td>GPIO4</td>
+<td>I2S WS (LRCLK)</td>
+<td>INMP441 WS, MAX98357 LRC</td>
+</tr>
+<tr>
+<td>GPIO5</td>
+<td>I2S SCK (BCLK)</td>
+<td>INMP441 SCK, MAX98357 BCLK</td>
+</tr>
+<tr>
+<td>GPIO6</td>
+<td>I2S SD IN</td>
+<td>INMP441 SD</td>
+</tr>
+<tr>
+<td>GPIO7</td>
+<td>I2S SD OUT</td>
+<td>MAX98357 DIN</td>
+</tr>
+<tr>
+<td>GPIO8</td>
+<td>UART TX → SIM</td>
+<td>SIM7670G RX</td>
+</tr>
+<tr>
+<td>GPIO9</td>
+<td>UART RX ← SIM</td>
+<td>SIM7670G TX</td>
+</tr>
+<tr>
+<td>GPIO10</td>
+<td>SIM PWR KEY</td>
+<td>SIM7670G PWRKEY</td>
+</tr>
+<tr>
+<td>GPIO11</td>
+<td>SIM RESET</td>
+<td>SIM7670G RESET</td>
+</tr>
+<tr>
+<td>GPIO12</td>
+<td>SOS Button</td>
+<td>Button → GND (pull-up)</td>
+</tr>
+<tr>
+<td>GPIO13</td>
+<td>Vibration Motor</td>
+<td>NPN transistor base</td>
+</tr>
+<tr>
+<td>GPIO14</td>
+<td>LED Red</td>
+<td>220Ω → LED → GND</td>
+</tr>
+<tr>
+<td>GPIO15</td>
+<td>LED Green</td>
+<td>220Ω → LED → GND</td>
+</tr>
+<tr>
+<td>GPIO16</td>
+<td>Battery ADC</td>
+<td>Voltage divider (100k/100k)</td>
+</tr>
+<tr>
+<td>GND</td>
+<td>Ground</td>
+<td>Common ground</td>
+</tr>
+<tr>
+<td>3V3</td>
+<td>3.3V rail</td>
+<td>AMS1117 output</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="mpu6050-fall-detection-i2c">1. MPU6050 (Fall Detection —
+I2C)</h2>
+<pre><code>MPU6050          ESP32-S3
+─────────        ──────────
+VCC         ──▶  3V3
+GND         ──▶  GND
+SDA         ──▶  GPIO1
+SCL         ──▶  GPIO2
+INT         ──▶  (optional: GPIO3 for interrupt-driven wake)
+AD0         ──▶  GND  (I2C address = 0x68)</code></pre>
+<p><strong>Notes:</strong> - Add 4.7kΩ pull-up resistors on SDA and SCL
+lines to 3.3V - MPU6050 can wake ESP32-S3 from deep sleep via INT pin -
+I2C address: 0x68 (AD0 low) or 0x69 (AD0 high)</p>
+<hr />
+<h2 id="sim7670g-4g-lte-uart">2. SIM7670G (4G LTE — UART)</h2>
+<pre><code>SIM7670G         ESP32-S3 / Power
+─────────        ─────────────────
+VCC (4.0V)  ──▶  MT3608 output (boost 3.7V→4.2V)
+GND         ──▶  Common GND
+RX          ──▶  GPIO8 (ESP32 TX)
+TX          ──▶  GPIO9 (ESP32 RX)
+PWRKEY      ──▶  GPIO10 (pull LOW 1s to power on)
+RESET       ──▶  GPIO11 (active LOW)
+RING        ──▶  (optional: GPIO3 for incoming call wake)</code></pre>
+<p><strong>Nano SIM slot:</strong></p>
+<pre><code>SIM7670G SIM pins → Nano SIM card holder (push-push type)</code></pre>
+<p><strong>Notes:</strong> - SIM7670G requires 3.4–4.4V, peak current 2A
+— do NOT power from 3.3V rail - Use MT3608 boost converter: LiPo (3.7V)
+→ 4.2V regulated - Add 100µF + 10µF capacitors on SIM7670G VCC for
+current spikes - UART baud rate: 115200 default - Power on sequence:
+hold PWRKEY LOW for 1 second</p>
+<hr />
+<h2 id="inmp441-microphone-i2s">3. INMP441 (Microphone — I2S)</h2>
+<pre><code>INMP441          ESP32-S3
+─────────        ──────────
+VDD         ──▶  3V3
+GND         ──▶  GND
+WS          ──▶  GPIO4  (Word Select / LRCLK)
+SCK         ──▶  GPIO5  (Bit Clock)
+SD          ──▶  GPIO6  (Serial Data OUT → ESP32 IN)
+L/R         ──▶  GND    (Left channel, address = 0)</code></pre>
+<p><strong>Notes:</strong> - INMP441 outputs left-justified 24-bit I2S
+data - L/R pin: GND = left channel, 3.3V = right channel - Sampling
+rate: 16kHz recommended for voice - Shared I2S bus with MAX98357 (WS +
+SCK lines shared)</p>
+<hr />
+<h2 id="max98357a-speaker-amplifier-i2s">4. MAX98357A (Speaker Amplifier
+— I2S)</h2>
+<pre><code>MAX98357A        ESP32-S3
+─────────        ──────────
+VDD         ──▶  3V3
+GND         ──▶  GND
+LRC (WS)    ──▶  GPIO4  (shared with INMP441)
+BCLK        ──▶  GPIO5  (shared with INMP441)
+DIN         ──▶  GPIO7  (Serial Data IN ← ESP32 OUT)
+SD          ──▶  3V3    (enable — tie HIGH to enable amp)
+GAIN        ──▶  leave floating (9dB gain default)</code></pre>
+<p><strong>Speaker connection:</strong></p>
+<pre><code>MAX98357A OUT+  ──▶  Speaker +
+MAX98357A OUT-  ──▶  Speaker -
+Speaker: 8Ω, 1W minimum</code></pre>
+<p><strong>Notes:</strong> - SD pin: HIGH = enabled, LOW = shutdown (use
+for power saving) - Do NOT connect OUT+ or OUT- to GND — fully
+differential output - Add small RC filter if audio has high-frequency
+noise</p>
+<hr />
+<h2 id="lipo-battery-tp4056-power-distribution">5. LiPo Battery + TP4056
++ Power Distribution</h2>
+<pre><code>LiPo Battery
+    │
+    ▼
+TP4056 (charger + protection)
+    │ BAT+ / BAT-
+    ├──────────────────▶ MT3608 IN+ (boost for SIM7670G → 4.2V)
+    │
+    └──────────────────▶ AMS1117-3.3 IN (→ 3.3V for ESP32 + sensors)
+
+USB-C ──▶ TP4056 VIN (5V charging input)</code></pre>
+<p><strong>TP4056 Connections:</strong></p>
+<pre><code>TP4056       
+────────
+VIN (5V) ──▶ USB-C 5V
+GND      ──▶ Common GND
+BAT+     ──▶ LiPo +
+BAT-     ──▶ LiPo - (= GND)
+OUT+     ──▶ MT3608 IN+ AND AMS1117 IN
+CHRG LED ──▶ (optional: 1kΩ → LED indicator)</code></pre>
+<p><strong>Battery voltage monitor:</strong></p>
+<pre><code>BAT+ ──▶ 100kΩ ──▶ GPIO16 (ADC)
+                └──▶ 100kΩ ──▶ GND</code></pre>
+<p>(Voltage divider: reads 0–2.1V on ADC for 0–4.2V battery)</p>
+<hr />
+<h2 id="sos-button">6. SOS Button</h2>
+<pre><code>3V3 ──▶ internal pull-up (ESP32 INPUT_PULLUP)
+         │
+       GPIO12
+         │
+      [BUTTON]
+         │
+        GND</code></pre>
+<p><strong>Notes:</strong> - Configure GPIO12 as INPUT_PULLUP in
+firmware - Detect LOW = button pressed - Add 100nF capacitor across
+button for debounce</p>
+<hr />
+<h2 id="vibration-motor">7. Vibration Motor</h2>
+<pre><code>GPIO13 ──▶ 1kΩ ──▶ NPN transistor (2N2222) Base
+                    Collector ──▶ Motor +
+                    Emitter  ──▶ GND
+Motor - ──▶ GND
+3V3    ──▶ Motor + (via transistor collector)
+           Add flyback diode (1N4148) across motor terminals</code></pre>
+<hr />
+<h2 id="leds">8. LEDs</h2>
+<pre><code>GPIO14 ──▶ 220Ω ──▶ Red LED anode ──▶ LED cathode ──▶ GND
+GPIO15 ──▶ 220Ω ──▶ Green LED anode ──▶ LED cathode ──▶ GND</code></pre>
+<hr />
+<h2 id="full-wiring-checklist">Full Wiring Checklist</h2>
+<ul class="task-list">
+<li><label><input type="checkbox" />MPU6050 powered and I2C pull-ups in
+place</label></li>
+<li><label><input type="checkbox" />SIM7670G on boosted supply with bulk
+capacitors</label></li>
+<li><label><input type="checkbox" />SIM card inserted and
+seated</label></li>
+<li><label><input type="checkbox" />INMP441 L/R pin tied to
+GND</label></li>
+<li><label><input type="checkbox" />MAX98357 SD pin tied
+HIGH</label></li>
+<li><label><input type="checkbox" />Shared I2S bus (GPIO4, GPIO5)
+connected to both mic and amp</label></li>
+<li><label><input type="checkbox" />TP4056 BAT pins to LiPo</label></li>
+<li><label><input type="checkbox" />AMS1117 output decoupled (10µF +
+100nF)</label></li>
+<li><label><input type="checkbox" />Battery ADC voltage divider in
+place</label></li>
+<li><label><input type="checkbox" />SOS button pull-up active, 100nF
+debounce cap</label></li>
+<li><label><input type="checkbox" />Motor flyback diode
+fitted</label></li>
+<li><label><input type="checkbox" />All grounds tied together (common
+GND)</label></li>
+<li><label><input type="checkbox" />USB-C connected to TP4056 VIN for
+charging</label></li>
+</ul>
