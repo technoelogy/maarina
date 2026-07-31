@@ -57,13 +57,10 @@
     pinMode(SOS_BUTTON_PIN, INPUT_PULLUP);
     pinMode(LED_PIN, OUTPUT);
 
-    // Power on the A7670E modem
-pinMode(4, OUTPUT);
-digitalWrite(4, LOW);
-delay(100);
-digitalWrite(4, HIGH);
-delay(2000);
-digitalWrite(4, LOW);
+    // Power on the A7670E modem via PWRKEY (GPIO21)
+  pinMode(21, OUTPUT);
+  digitalWrite(21, HIGH);
+
 
     Serial.println("Booting modem — waiting 15s...");
     delay(15000);

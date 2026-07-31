@@ -48,3 +48,17 @@ Phase 6 — Multi-contact sequence
 Phase 7 — Power optimisation
 Phase 8 — Enclosure + field test
 
+### Session 3 — 31st July 2026
+- Restarted after long gap; re-oriented on hardware setup
+- Confirmed correct board: A7670E (SIM7670G parked for GPS phase)
+- Located and connected antenna to MAIN port
+- Wired SOS button: black clip to IO3, green clip to GND
+- Uploaded dial_test.ino successfully
+- Modem not responding to AT commands
+- Contacted Waveshare support; they confirmed:
+  - UART pins: ESP32 GPIO17 = A7670 TX, GPIO18 = A7670 RX
+  - PWRKEY control: GPIO21 (HIGH = ON)
+- Added GPIO21 power-on code; modem still not responding
+- Sent follow-up to Waveshare with photo and detailed status
+- Where I stopped: Waiting on Waveshare reply about jumper switch location
+
