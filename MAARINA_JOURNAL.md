@@ -62,3 +62,13 @@ Phase 8 — Enclosure + field test
 - Sent follow-up to Waveshare with photo and detailed status
 - Where I stopped: Waiting on Waveshare reply about jumper switch location
 
+### Session 4 — 3rd August 2026
+- Waveshare replied: 4 DIP switches on back (CAM, HUB, 4G, USB) must be ON
+- Set all 4 DIP switches to ON
+- Used Waveshare's provided test sketch (at_test.ino) — cleaner than dial_test
+- Result: ESP32 sends AT commands, modem replies with garbled character (�)
+- Progress: modem IS reachable (wiring/power fine), but baud rate or bit alignment off
+- Tried swapping MODEM_RX/MODEM_TX — same garbled reply
+- Sent follow-up to Waveshare asking about baud rate confirmation and autobaud
+- Where I stopped: Waiting on Waveshare reply
+
